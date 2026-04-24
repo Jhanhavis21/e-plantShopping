@@ -1,62 +1,62 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { addItem } from '../CartSlice';
-import CartItem from './CartItem';
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { addItem } from "./CartSlice";
+import CartItem from "./CartItem";
 
 function ProductList() {
-  const [showCart, setShowCart] = useState(false);
-  const [addedToCart, setAddedToCart] = useState({});
   const dispatch = useDispatch();
 
-  const plantsArray = [
-    {
-      category: "Plants",
-      plants: [
-        {
-          name: "Snake Plant",
-          image: "https://cdn.pixabay.com/photo/2021/01/22/06/04/snake-plant.jpg",
-          description: "Improves air quality",
-          cost: "$15"
-        },
-        {
-          name: "Aloe Vera",
-          image: "https://cdn.pixabay.com/photo/2018/04/02/07/42/leaf.jpg",
-          description: "Medicinal plant",
-          cost: "$10"
-        }
-      ]
-    }
+  const totalItems = useSelector(state =>
+    state.cart.items.reduce((sum, item) => sum + item.quantity, 0)
+  );
+
+  const [showCart, setShowCart] = useState(false);
+  const [addedToCart, setAddedToCart] = useState({});
+
+  const plants = [
+    // 🌿 Indoor Plants
+    { name: "Snake Plant", price: "$15", category: "Indoor", image: "https://via.placeholder.com/100" },
+    { name: "Peace Lily", price: "$20", category: "Indoor", image: "https://via.placeholder.com/100" },
+
+    // 🌵 Succulents
+    { name: "Aloe Vera", price: "$10", category: "Succulent", image: "https://via.placeholder.com/100" },
+    { name: "Cactus", price: "$12", category: "Succulent", image: "https://via.placeholder.com/100" },
+
+    // 🌸 Flowering
+    { name: "Rose Plant", price: "$18", category: "Flowering", image: "https://via.placeholder.com/100" },
+    { name: "Orchid", price: "$25", category: "Flowering", image: "https://via.placeholder.com/100" },
   ];
 
-  const handleAddToCart = (product) => {
-    dispatch(addItem(product));
+  const handleAddToCart = (plant) => {
+    dispatch(addItem(plant));
 
-    setAddedToCart((prev) => ({
+    setAddedToCart(prev => ({
       ...prev,
-      [product.name]: true,
+      [plant.name]: true
     }));
   };
 
   return (
     <div>
 
-      <button onClick={() => setShowCart(false)}>Plants</button>
-      <button onClick={() => setShowCart(true)}>Cart</button>
+      {/* HEADER */}
+      <div style={{ background: "green", color: "white", padding: "10px", display: "flex", justifyContent: "space-between" }}>
+        <span onClick={() => setShowCart(false)}>Paradise Nursery</span>
+        <span>Plants</span>
+        <span onClick={() => setShowCart(true)}>🛒 ({totalItems})</span>
+      </div>
 
       {!showCart ? (
-        <div className="product-grid">
-          {plantsArray.map((category, i) => (
-            <div key={i}>
-              <h2>{category.category}</h2>
+        <div>
+          {["Indoor", "Succulent", "Flowering"].map(category => (
+            <div key={category}>
+              <h2>{category}</h2>
 
-              {category.plants.map((plant, j) => (
-                <div key={j} className="product-card">
-
-                  <img src={plant.image} width="150" />
-
+              {plants.filter(p => p.category === category).map((plant, i) => (
+                <div key={i}>
+                  <img src={plant.image} />
                   <h3>{plant.name}</h3>
-                  <p>{plant.description}</p>
-                  <p>{plant.cost}</p>
+                  <p>{plant.price}</p>
 
                   <button
                     onClick={() => handleAddToCart(plant)}
@@ -64,14 +64,13 @@ function ProductList() {
                   >
                     {addedToCart[plant.name] ? "Added" : "Add to Cart"}
                   </button>
-
                 </div>
               ))}
             </div>
           ))}
         </div>
       ) : (
-        <CartItem />
+        <CartItem onContinueShopping={() => setShowCart(false)} />
       )}
 
     </div>
