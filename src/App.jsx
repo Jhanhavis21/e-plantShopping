@@ -1,34 +1,32 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import ProductList from "./ProductList";
+import AboutUs from "./AboutUs";
+import "./App.css";
 
 function App() {
-  const [start, setStart] = useState(false);
+  const [page, setPage] = useState("landing");
 
-  if (!start) {
+  if (page === "landing") {
     return (
-      <div style={{
-        height: "100vh",
-        backgroundImage: "url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6')",
-        backgroundSize: "cover",
-        color: "white",
-        textAlign: "center",
-        paddingTop: "150px"
-      }}>
+      <div className="landing">
         <h1>Paradise Nursery</h1>
-
         <p>
-          At Paradise Nursery, we provide premium indoor plants to
-          enhance your living space and promote a healthier lifestyle.
+          Welcome to Paradise Nursery, where green meets serenity.
+          Explore our collection of beautiful indoor plants.
         </p>
 
-        <button onClick={() => setStart(true)}>
+        <button className="btn" onClick={() => setPage("products")}>
           Get Started
         </button>
       </div>
     );
   }
 
-  return <ProductList />;
+  if (page === "about") {
+    return <AboutUs />;
+  }
+
+  return <ProductList goHome={() => setPage("landing")} />;
 }
 
 export default App;

@@ -1,9 +1,10 @@
-import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addItem } from "./CartSlice";
+import { useState } from "react";
 import CartItem from "./CartItem";
+import "./App.css";
 
-function ProductList() {
+function ProductList({ goHome }) {
   const dispatch = useDispatch();
 
   const totalItems = useSelector(state =>
@@ -11,68 +12,61 @@ function ProductList() {
   );
 
   const [showCart, setShowCart] = useState(false);
-  const [addedToCart, setAddedToCart] = useState({});
+  const [added, setAdded] = useState({});
 
+  // ✅ 6 plants, 3 categories
   const plants = [
-    // 🌿 Indoor Plants
-    { name: "Snake Plant", price: "$15", category: "Indoor", image: "https://via.placeholder.com/100" },
-    { name: "Peace Lily", price: "$20", category: "Indoor", image: "https://via.placeholder.com/100" },
-
-    // 🌵 Succulents
-    { name: "Aloe Vera", price: "$10", category: "Succulent", image: "https://via.placeholder.com/100" },
-    { name: "Cactus", price: "$12", category: "Succulent", image: "https://via.placeholder.com/100" },
-
-    // 🌸 Flowering
-    { name: "Rose Plant", price: "$18", category: "Flowering", image: "https://via.placeholder.com/100" },
-    { name: "Orchid", price: "$25", category: "Flowering", image: "https://via.placeholder.com/100" },
+    { name: "Snake Plant", price: "$15", category: "Indoor", image: "https://picsum.photos/100?1" },
+    { name: "Peace Lily", price: "$20", category: "Indoor", image: "https://picsum.photos/100?2" },
+    { name: "Aloe Vera", price: "$10", category: "Succulent", image: "https://picsum.photos/100?3" },
+    { name: "Cactus", price: "$12", category: "Succulent", image: "https://picsum.photos/100?4" },
+    { name: "Rose", price: "$18", category: "Flowering", image: "https://picsum.photos/100?5" },
+    { name: "Orchid", price: "$25", category: "Flowering", image: "https://picsum.photos/100?6" },
   ];
 
-  const handleAddToCart = (plant) => {
-    dispatch(addItem(plant));
-
-    setAddedToCart(prev => ({
-      ...prev,
-      [plant.name]: true
-    }));
+  const handleAdd = (p) => {
+    dispatch(addItem(p));
+    setAdded(prev => ({ ...prev, [p.name]: true }));
   };
 
   return (
     <div>
 
-      {/* HEADER */}
-      <div style={{ background: "green", color: "white", padding: "10px", display: "flex", justifyContent: "space-between" }}>
+      {/* ✅ HEADER (both pages) */}
+      <div className="navbar">
         <span onClick={() => setShowCart(false)}>Paradise Nursery</span>
+        <span onClick={goHome}>Home</span>
         <span>Plants</span>
         <span onClick={() => setShowCart(true)}>🛒 ({totalItems})</span>
       </div>
 
       {!showCart ? (
-        <div>
-          {["Indoor", "Succulent", "Flowering"].map(category => (
-            <div key={category}>
-              <h2>{category}</h2>
+        ["Indoor", "Succulent", "Flowering"].map(cat => (
+          <div key={cat}>
+            <h2>{cat}</h2>
 
-              {plants.filter(p => p.category === category).map((plant, i) => (
-                <div key={i}>
-                  <img src={plant.image} />
-                  <h3>{plant.name}</h3>
-                  <p>{plant.price}</p>
+            <div className="product-grid">
+              {plants.filter(p => p.category === cat).map((p, i) => (
+                <div className="card" key={i}>
+                  <img src={p.image} />
+                  <h4>{p.name}</h4>
+                  <p>{p.price}</p>
 
                   <button
-                    onClick={() => handleAddToCart(plant)}
-                    disabled={addedToCart[plant.name]}
+                    className="btn"
+                    onClick={() => handleAdd(p)}
+                    disabled={added[p.name]}
                   >
-                    {addedToCart[plant.name] ? "Added" : "Add to Cart"}
+                    {added[p.name] ? "Added to Cart" : "Add to Cart"}
                   </button>
                 </div>
               ))}
             </div>
-          ))}
-        </div>
+          </div>
+        ))
       ) : (
         <CartItem onContinueShopping={() => setShowCart(false)} />
       )}
-
     </div>
   );
 }
